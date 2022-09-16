@@ -20,11 +20,14 @@ var albums = []album{
 
 // Assign the handler function to an endpoint path.
 func main() {
-  // getAlbumshandles reqquests to the /albums endpoint path
+  // getAlbumshandles requests to the /albums endpoint path
+  // With Gin, you can associate a handler with an HTTP method-and-path.
+  // In this way you can separately route requests route requests sent to a single path
   router := gin.Default()
   router.GET("/albums", getAlbums)
+  router.POST("/albums", postAlbums)
 
-  router.Run("localhost:8080")
+  router.Run("localhost:8080")  
 }
 
 
@@ -34,7 +37,25 @@ func getAlbums(ctx *gin.Context) {
   // It carries request details, validates and serialises JSON...
   // IndentedJSON serialise the struct albums into JSON and add it to the response.
   // The http status code is what you want to send to the client.
-  // Also Contect.JSON is availabe to send simpler JSON but intended form is easier to
+  // Also Contect.JSON is availabe to send simpler JSON but intended form is easier to 
   // debugging and so on. The size difference between the two is usually small.
     ctx.IndentedJSON(http.StatusOK, albums)
 }
+
+// postAlbums add albums data from JSON received in the request body.
+func postAlbums(c *gin.Context) {
+  var newAlbum album
+  
+  // BindJSON bind the received JSON to newAlbum
+  err := c.BindJSON(&newAlbum)
+  if err != nil {
+    return
+  } 
+
+  // append newAlbum (album struct) initialised from the JSON to the albums slice
+  albums = append(albums, newAlbum)
+  // Send response of Created == 201 with JSON representing the newly added alubm newAlbum
+  c.IndentedJSON(http.StatusCreated, newAlbum)
+}
+
+
