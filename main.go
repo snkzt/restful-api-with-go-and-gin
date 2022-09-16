@@ -25,6 +25,7 @@ func main() {
   // In this way you can separately route requests route requests sent to a single path
   router := gin.Default()
   router.GET("/albums", getAlbums)
+  router.GET("/albums/:id", getAlbumById)
   router.POST("/albums", postAlbums)
 
   router.Run("localhost:8080")  
@@ -42,12 +43,26 @@ func getAlbums(ctx *gin.Context) {
     ctx.IndentedJSON(http.StatusOK, albums)
 }
 
+// getAlbumById loop over the list of albums to find matching ID of the parameter
+// sent from the client, then reutrn a found album or not found message as a response.
+func getAlbumById(ctx *gin.Context) {
+  var id = ctx.Param("id")
+
+  for _, album := range albums {
+    if album.ID == id {
+      ctx.IndentedJSON(http.StatusOK, album)
+      return
+    }
+  }
+  ctx.IndentedJSON(http.StatusNotFound, gin.H{"message": "album not found"})
+}
+
 // postAlbums add albums data from JSON received in the request body.
-func postAlbums(c *gin.Context) {
+func postAlbums(ctx *gin.Context) {
   var newAlbum album
   
   // BindJSON bind the received JSON to newAlbum
-  err := c.BindJSON(&newAlbum)
+  err := ctx.BindJSON(&newAlbum)
   if err != nil {
     return
   } 
@@ -55,7 +70,6 @@ func postAlbums(c *gin.Context) {
   // append newAlbum (album struct) initialised from the JSON to the albums slice
   albums = append(albums, newAlbum)
   // Send response of Created == 201 with JSON representing the newly added alubm newAlbum
-  c.IndentedJSON(http.StatusCreated, newAlbum)
+  ctx.IndentedJSON(http.StatusCreated, newAlbum)
 }
-
 
