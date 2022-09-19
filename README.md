@@ -6,7 +6,7 @@
 
 ### HOW
 1. Clone [this](https://github.com/snkzt/restful-api-with-go-and-gin) repo to your local
-2. Run ```$ go.run .``` below in your terminal at the root directory of the repo is cloned
+2. Run `$ go.run .` below in your terminal at the root directory of the repo is cloned
 3. Open another terminal screen and run below and see what will happen 
    ```
    To see what albums are there
